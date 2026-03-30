@@ -2,48 +2,61 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-/**
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  testDir: './tests',
-  /* Run tests in files in parallel */
-  fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  //外层管「框架」：用例跑多久、并行多少、失败重试几次。
+  testDir: './tests',        // 测试用例目录
+  timeout: 60000,            // 单个用例最大执行时间（全局超时）
+  fullyParallel: true,       // 是否并行跑用例
+  forbidOnly: !!process.env.CI, // CI 环境禁止 test.only
+  retries: process.env.CI ? 2 : 0, // 失败重试次数
+  workers: process.env.CI ? 1 : undefined, // 并行 worker 数量
+  reporter: 'html',          // 测试报告格式
+  
+  //use 管「页面」：页面默认网址、操作超时、截图录屏、登录状态。
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
+    baseURL: 'http://10.58.2.201:20505', //写 await page.goto('/workspace')，实际会访问 http://10.58.2.201:20505/workspace。
+    trace: 'on-first-retry',       // 失败时录制操作轨迹
+    screenshot: 'only-on-failure', // 失败自动截图 
+    video: 'retain-on-failure',    // 失败自动录屏 
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    actionTimeout: 10000,          // 页面操作超时（点击/输入）
+    navigationTimeout: 30000,     // 页面跳转超时 
+    expect: {
+      timeout: 5000                // 断言超时 
+    }
   },
 
-  /* Configure projects for major browsers */
+
   projects: [
+  // 1. 登录准备（只跑一次）
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'setup',
+      testMatch: '**/*.setup.js', // 登录文件
     },
 
+    // 2. 正式测试（依赖 setup）
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'test',
+      dependencies: ['setup'], // 关键！先跑setup
+      testMatch: '**/*.spec.js', // 测试用例
+      use: {
+        ...devices['Desktop Chrome'], // chromium 合并到 test项目
+        storageState: './loginState.json', // 加载登录状态
+        headless:false
+      },
     },
+
+    // {
+    //   name: 'chromium',
+    //   use: { ...devices['Desktop Chrome'] },
+    // },
+
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 
     // {
     //   name: 'webkit',
@@ -71,11 +84,5 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
 

@@ -1,0 +1,40 @@
+import { test } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage.js';
+import { RegisterPage } from '../pages/RegisterPage.js';
+import { DoctorPage } from '../pages/DoctorPage.js';
+import { RefundPage } from '../pages/RefundPage.js';
+import { PharmacyPage } from '../pages/PharmacyPage.js';
+import { randomName, randomIdCard, randomPhone } from '../utils/common.js';
+
+test.describe('反向流程 - 退费/退方/退药', () => {
+  let name;
+
+  test.beforeEach(async ({ page }) => {
+    name = randomName();
+  });
+
+  test('2. 收费后 → 退费 → 退药 → 退方 → 取消挂号', async ({ page }) => {
+    // const loginPage = new LoginPage(page);
+    const registerPage = new RegisterPage(page);
+    const doctorPage = new DoctorPage(page);
+    const refundPage = new RefundPage(page);
+    const pharmacyPage = new PharmacyPage(page);
+
+    // await loginPage.login('账号', '密码');
+
+    // 退费
+    await refundPage.searchInvoice(name);
+    await refundPage.refund();
+
+    // 退药
+    await pharmacyPage.searchPrescription(name);
+    await pharmacyPage.returnDrug();
+
+    // 医生退方
+    await doctorPage.searchPatient(name);
+    await doctorPage.cancelPrescription();
+
+    // 取消挂号
+    await registerPage.cancelRegister();
+  });
+});

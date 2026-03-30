@@ -1,0 +1,46 @@
+import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage.js';
+import { RegisterPage } from '../pages/RegisterPage.js';
+import { DoctorPage } from '../pages/DoctorPage.js';
+import { ChargePage } from '../pages/ChargePage.js';
+import { PharmacyPage } from '../pages/PharmacyPage.js';
+import { randomName, randomIdCard, randomPhone } from '../utils/common.js';
+
+test.describe('正向流程 - 门诊全流程', () => {
+  let name, idCard, phone;
+
+  test.beforeEach(async ({ page }) => {
+    name = randomName();
+    idCard = randomIdCard();
+    phone = randomPhone();
+  });
+
+  test('1. 挂号 → 接诊 → 开方 → 收费 → 发药', async ({ page }) => {
+    // const loginPage = new LoginPage(page);
+    const registerPage = new RegisterPage(page);
+    const doctorPage = new DoctorPage(page);
+    const chargePage = new ChargePage(page);
+    const pharmacyPage = new PharmacyPage(page);
+
+    // 登录
+    // await loginPage.login('账号', '密码');
+
+    // 挂号
+    await registerPage.selectDeptAndDoctor('内科', '张医生');
+    await registerPage.fillPatientInfo(name, idCard, phone);
+    await registerPage.submitRegister();
+
+    // 医生接诊 + 开方
+    await doctorPage.searchPatient(name);
+    await doctorPage.receivePatient();
+    await doctorPage.addPrescription('感冒胶囊');
+
+    // 收费
+    await chargePage.searchPatient(name);
+    await chargePage.pay();
+
+    // 发药
+    await pharmacyPage.searchPrescription(name);
+    await pharmacyPage.sendDrug();
+  });
+});

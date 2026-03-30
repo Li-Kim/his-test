@@ -1,0 +1,30 @@
+{
+  "login": {
+    "username": "SA540626000010",
+    "password": "1234qwer",
+    "hospitalCode": "suoxian"
+  },
+  "outpatient": {
+    "patient": {
+      "name": "张三",
+      "gender": "男",
+      "age": 35,
+      "idCard": "110101198808081234",
+      "phone": "13800138000"
+    },
+    "doctor": {
+      "code": "DOC001",
+      "name": "李医生",
+      "department": "内科"
+    },
+    "chargeItems": [
+      {"itemCode": "001", "itemName": "普通门诊诊察费", "price": 50},
+      {"itemCode": "002", "itemName": "血常规检查", "price": 20}
+    ]
+  },
+  "hospitalInfo": {
+    "name": "索县人民医院",
+    "code": "suoxian",
+    "baseUrl": "http://10.58.2.201:20505"
+  }
+}

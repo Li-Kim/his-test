@@ -6,3 +6,25 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+test-results/
+results/
+html-report/
+
+# 截图、录屏、trace 录像
+**/screenshots/
+**/videos/
+**/traces/
+trace.zip
+
+# 登录状态文件
+loginState.json
+storageState.json
+
+# 系统/IDE 垃圾文件
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+tmp/
+temp/
