@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import {LoginPage} from '../pages/LoginPage';
 import { config } from '../config';
 import loginData from '../data/commom/loginData.json';
-//  前置：只进登录页
+//  前置：每个用例进入登录页
 test.beforeEach(async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.goto(config.baseUrl);
@@ -12,9 +12,10 @@ test.afterEach(async ({ page }) => {
   try {
     const unlockUrl = `${config.baseUrl}/prod-his-api/his/v5/auth/clear/loginError/${encodeURIComponent(config.username)}`;
     await page.request.get(unlockUrl);
-    console.log('✅ 用例结束 → 自动解锁');
+    // console.log('✅ 用例结束 → 自动解锁');
+    // console.log('----------------------------------------'); 
   } catch (e) {
-    // 不报错
+    console.log('❌ 解锁失败:', e);
   }
 });
 
@@ -31,7 +32,7 @@ test('正确账号+错误密码提示异常', async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.login(config.username, '123456');
 
-  await expect(page.getByText(loginData.errorMsg.wrongPwd1)).toBeVisible();
+  await page.getByText(loginData.errorMsg.wrongPwd1).last().waitFor({state: 'visible',timeout: 10000 });
 });
 
 // 3. 账号为空 → 不能登录
@@ -39,7 +40,7 @@ test('空账号登录提示异常', async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.login('', config.password);
 
-  await expect(page.getByText(loginData.errorMsg.emptyUsername)).toBeVisible();
+  await page.getByText(loginData.errorMsg.emptyUsername).last().waitFor({state: 'visible',timeout: 10000 });
 });
 
 // 4. 密码为空 → 不能登录
@@ -47,26 +48,30 @@ test('空密码登录提示异常', async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.login(config.username, '');
 
-  await expect(page.getByText(loginData.errorMsg.emptyPassword)).toBeVisible();
+  await page.getByText(loginData.errorMsg.emptyPassword).last().waitFor({state: 'visible',timeout: 10000 });
 });
 
 // 5.连续 5 次错误密码锁定账号 10 分钟
 test('连续5次错误密码锁定账号', async ({ page }) => {
   const loginPage = new LoginPage(page);
+  const wrongPwd = '123456';
 
   // 1-4次错误密码
   for (let i = 1; i <= 4; i++) {
-    await loginPage.login(config.username, '123456');
-    await expect(page.getByText(loginData.errorMsg[`wrongPwd${i}`]).last()).toBeVisible();
-  }
+    await loginPage.login(config.username, wrongPwd);
+    await  page.getByText(loginData.errorMsg[`wrongPwd${i}`]).last().waitFor({
+      state: 'visible',
+      timeout: 10000
+    });
+  };
 
   // 第5次错误 → 锁定
-  await loginPage.login(config.username, '123456');
-  await expect(page.getByText(/密码输入错误5次/).last()).toBeVisible();
+  await loginPage.login(config.username, wrongPwd);
+  await page.getByText(/密码输入错误5次/).last().waitFor({state: 'visible',timeout: 10000 });
 
   // 锁定后正确密码也无法登录
   await loginPage.login(config.username, config.password);
-  await expect(page.getByText(/锁定10分钟/).last()).toBeVisible();
+  await page.getByText(/锁定10分钟/).last().waitFor({state: 'visible',timeout: 10000 });
 
   // ==============================================
   //  解锁代码（GET 接口）
@@ -82,9 +87,7 @@ test('连续5次错误密码锁定账号', async ({ page }) => {
   expect(unlockResponse.ok()).toBeTruthy();
 
   // 4. 解析接口返回的JSON，验证业务数据成功（data: true）
-  const responseData = await unlockResponse.json(
-
-  );
+  const responseData = await unlockResponse.json();
   console.log('解锁接口返回数据:', responseData);
   expect(responseData.data).toBe(true); // 验证业务成功
 
@@ -93,8 +96,8 @@ test('连续5次错误密码锁定账号', async ({ page }) => {
   await loginPage.waitLoad();
 
   // 解锁后再次输错 → 从第1次开始
-  await loginPage.login(config.username, '123456');
-  await expect(page.getByText(loginData.errorMsg.wrongPwd1).last()).toBeVisible({ timeout: 10000 });
+  await loginPage.login(config.username,wrongPwd);
+  await page.getByText(loginData.errorMsg.wrongPwd1).last().waitFor({state: 'visible',timeout: 10000 });
 });
  
 

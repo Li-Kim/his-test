@@ -11,7 +11,7 @@ export default defineConfig({
   fullyParallel: true,       // 是否并行跑用例
   forbidOnly: !!process.env.CI, // CI 环境禁止 test.only
   retries: process.env.CI ? 2 : 0, // 失败重试次数
-  workers: process.env.CI ? 1 : 1, // 并行 worker 数量
+  workers: process.env.CI ? 2 : undefined, //  worker 数量
   reporter: 'html',          // 测试报告格式
 
   //use 管「页面」：页面默认网址、操作超时、截图录屏、登录状态。
@@ -22,9 +22,9 @@ export default defineConfig({
     video: 'retain-on-failure',    // 失败自动录屏 
 
     actionTimeout: 10000,          // 页面操作超时（点击/输入）
-    navigationTimeout: 30000,     // 页面跳转超时 
+    navigationTimeout: 30000,      // 页面跳转超时 
     expect: {
-      timeout: 10000                // 断言超时 
+      timeout: 10000               // 断言超时 
     }
   },
 
@@ -45,12 +45,16 @@ export default defineConfig({
     // 3. 登录测试用例 → 只清理，不登录
     {
       name: 'login',
-      dependencies: ['clean'],
+      dependencies: ['clean'],         //清理账号
       testMatch: '**/login.spec.js',
+      workers: 1,                    //一次只跑1个用例
+      fullyParallel: false,          // 同一个文件里的用例一个跑完再跑一个（串行） 文件内用例也串行
       use: {
         headless: false,
         ...devices['Desktop Chrome'],
+        storageState: undefined,       // 清理浏览器
       },
+      
     },
 
     // 4. 业务测试用例 → 走登录状态
