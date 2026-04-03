@@ -1,27 +1,28 @@
 // 基础页面类：所有页面（登录、挂号、医生站...）都继承这个类
-// 封装通用方法：点击、输入、等待、截图、日志...
+// 封装通用方法：访问URL、输入、点击、等待、获取、截图、日志...
 export class BasePage {
   constructor(page) {
     this.page = page;
   }
 
-   // 访问URL（支持options）
-  async goto(url, options) {
-    await this.page.goto(url, options);
+   // 访问URL（支持options）  timeout: 60000, 超时时间（毫秒） waitUntil: 'load'等待页面加载到什么程度
+  async goto(url) {
+    await this.page.goto(url, { waitUntil: 'networkidle' });
   }
-
-  // 点击
-  async click(text) {
-    await this.page.getByRole('button', { name: text }).click();
-  }
-
+  
   // 输入
-    async fill(label, value) {
+    async input(label, value) {
     await this.page.getByLabel(label).fill(value);
   }
 
-  // 等待元素可见
-   async waitForVisible(text) {
+  // 点击按钮
+  async clickBtn(text) {
+    await this.page.getByRole('button', { name: text }).click();
+  }
+
+
+  // 等待文字可见
+   async waitText(text) {
     await this.page.getByText(text).waitFor({ state: 'visible' });
   }
 
@@ -30,8 +31,17 @@ export class BasePage {
     return await this.page.textContent(selector);
   }
 
-  // 等待加载完成
-  async waitForLoad() {
+ 
+  // load(完全加载)             页面所有资源加载完成（图片、样式、视频）
+  // domcontentloaded(结构加载) 页面DOM结构加载完成（默认，推荐，速度快）
+  // networkidle(网络空闲)      网络空闲（无请求，最稳但最慢）
+  // 等待页面加载
+  async waitLoad() {
+    await this.page.waitForLoadState('domcontentloaded');
+  }
+
+  // 等待页面完全加载（网络空闲，适合数据密集型页面）
+  async waitFullLoad() {
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -41,18 +51,8 @@ export class BasePage {
   }
 
   // 等待URL
-  async waitForUrl(url) {
+  async waitUrl(url) {
     await this.page.waitForURL(url);
   }
-
-
-  // 封装：全自动登录
-  async login(config) {
-    await this.fill('*账号', config.username);
-    await this.fill('*密码', config.password);
-    await this.click('login');
-    await this.waitForUrl('**/workspace**');
-  }
 }
-
 

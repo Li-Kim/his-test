@@ -1,21 +1,26 @@
 import { test} from '@playwright/test';
 import baseConfig from '../config/base.js';
 import { config } from "../config/index.js";
-import { BasePage } from "../pages/BasePage.js";
+import { LoginPage } from '../pages/LoginPage.js';
 
 test('全局登录', async ({ page }) => {
-  const basePage = new BasePage(page);
+  const loginPage = new LoginPage(page);
   // 1. 打开网页
-  await basePage.goto(config.baseUrl,{waitUntil:'networkidle'});
+  await loginPage.goto(config.baseUrl, { waitUntil: 'networkidle' });
+
   // 2.登录
-  await basePage.login(config);
-  // 3.保存登录状态
+  await loginPage.login(config.username,config.password);
+
+  // 3. 等待工作台URL
+  await loginPage.waitUrl(config.baseUrl + '/workspace');
+
+  // 4. 保存登录状态
   await page.context().storageState({ path: baseConfig.STORAGE_STATE });
   
   console.log('=========================================');
   console.log('🏥 当前医院：',config.hospitalName);
   console.log('🌍 当前环境：', config.env);
   console.log('🔗 测试地址：', config.baseUrl);
-  console.log("---登录成功！！！---")
+  console.log("---登录成功！已保存登录状态---")
   console.log('=========================================');
 });

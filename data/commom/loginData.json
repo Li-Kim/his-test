@@ -1,0 +1,11 @@
+{
+  "errorMsg": {
+    "emptyUsername": "用户名不能为空",
+    "emptyPassword": "用户密码不能为空",
+    "wrongPwd1": "密码输入错误1次",
+    "wrongPwd2": "密码输入错误2次",
+    "wrongPwd3": "密码输入错误3次",
+    "wrongPwd4": "密码输入错误4次",
+    "locked": "密码输入错误5次，帐户锁定10分钟"
+  }
+}

@@ -11,9 +11,9 @@ export default defineConfig({
   fullyParallel: true,       // 是否并行跑用例
   forbidOnly: !!process.env.CI, // CI 环境禁止 test.only
   retries: process.env.CI ? 2 : 0, // 失败重试次数
-  workers: process.env.CI ? 1 : undefined, // 并行 worker 数量
+  workers: process.env.CI ? 1 : 1, // 并行 worker 数量
   reporter: 'html',          // 测试报告格式
-  
+
   //use 管「页面」：页面默认网址、操作超时、截图录屏、登录状态。
   use: {
     baseURL: 'http://10.58.2.201:20505', //写 await page.goto('/workspace')，实际会访问 http://10.58.2.201:20505/workspace。
@@ -24,27 +24,45 @@ export default defineConfig({
     actionTimeout: 10000,          // 页面操作超时（点击/输入）
     navigationTimeout: 30000,     // 页面跳转超时 
     expect: {
-      timeout: 5000                // 断言超时 
+      timeout: 10000                // 断言超时 
     }
   },
 
 
   projects: [
-  // 1. 登录准备（只跑一次）
+     // 1. 环境清理（解锁账号）
     {
-      name: 'setup',
-      testMatch: '**/*.setup.js', // 登录文件
+      name: 'clean',
+      testMatch: '**/clean.setup.js',
     },
 
-    // 2. 正式测试（依赖 setup）
+    // 2. 全局登录（给业务用例使用）
+    {
+      name: 'setup',
+      testMatch: '**/login.setup.js',
+    },
+
+    // 3. 登录测试用例 → 只清理，不登录
+    {
+      name: 'login',
+      dependencies: ['clean'],
+      testMatch: '**/login.spec.js',
+      use: {
+        headless: false,
+        ...devices['Desktop Chrome'],
+      },
+    },
+
+    // 4. 业务测试用例 → 走登录状态
     {
       name: 'test',
-      dependencies: ['setup'], // 关键！先跑setup
-      testMatch: '**/*.spec.js', // 测试用例
+      dependencies: ['setup'],
+      testIgnore: ['**/login.spec.js'],
       use: {
-        ...devices['Desktop Chrome'], // chromium 合并到 test项目
-        storageState: './loginState.json', // 加载登录状态
-        headless:false
+        headless: false,
+        ...devices['Desktop Chrome'],
+        storageState: './loginState.json',
+
       },
     },
 
