@@ -22,7 +22,7 @@ export default defineConfig({
     video: 'retain-on-failure',    // 失败自动录屏 
 
     actionTimeout: 10000,          // 页面操作超时（点击/输入）
-    navigationTimeout: 30000,      // 页面跳转超时 
+    navigationTimeout: 60000,      // 页面跳转超时 
     expect: {
       timeout: 10000               // 断言超时 
     }

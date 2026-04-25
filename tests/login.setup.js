@@ -1,7 +1,6 @@
 import { test} from '@playwright/test';
-import baseConfig from '../config/base.js';
-import { config } from "../config/index.js";
-import { LoginPage } from '../pages/LoginPage.js';
+import { baseConfig, config } from "../config";
+import { LoginPage } from '../pages';
 
 test('全局登录', async ({ page }) => {
   const loginPage = new LoginPage(page);

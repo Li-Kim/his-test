@@ -6,7 +6,8 @@
   "scripts": {
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:report": "playwright show-report"
+    "test:report": "playwright show-report",
+    "setup:env": "node scripts/setup-env.js"
   },
   "name": "his-test",
   "version": "1.0.0",
@@ -16,6 +17,7 @@
     "test": "tests"
   },
   "dependencies": {
+    "dotenv": "^16.6.1",
     "playwright": "^1.58.2",
     "playwright-core": "^1.58.2",
     "undici-types": "^7.18.2"
@@ -23,5 +25,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "module"
 }

@@ -20,6 +20,11 @@ trace.zip
 loginState.json
 storageState.json
 
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
 # 系统/IDE 垃圾文件
 .DS_Store
 Thumbs.db

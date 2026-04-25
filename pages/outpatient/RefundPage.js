@@ -1,4 +1,4 @@
-import { BasePage } from './BasePage.js';
+import { BasePage } from '../common/BasePage.js';
 
 export class RefundPage extends BasePage {
   async searchInvoice(name) {

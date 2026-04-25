@@ -1,19 +1,26 @@
 import { test, expect } from '@playwright/test';
-import {LoginPage} from '../pages/LoginPage';
-import { config } from '../config';
-import loginData from '../data/commom/loginData.json';
+import { LoginPage } from '../pages/index.js';
+import { config } from '../config/index.js';
+import { testData, loginErrorMsg } from '../data/index.js';
+import { unlockAccount, waitForError } from '../utils/common/index.js';
+
+// 输出环境信息
+console.log('=========================================');
+console.log('🏥 当前医院：', config.hospitalName);
+console.log('🌍 当前环境：', config.env);
+console.log('🔗 测试地址：', config.baseUrl);
+console.log('=========================================');
+
 //  前置：每个用例进入登录页
 test.beforeEach(async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.goto(config.baseUrl);
+  await loginPage.waitFullLoad(); // 等待登录页面完全加载
 });
 //  后置：解锁，足够保证所有用例干净
 test.afterEach(async ({ page }) => {
   try {
-    const unlockUrl = `${config.baseUrl}/prod-his-api/his/v5/auth/clear/loginError/${encodeURIComponent(config.username)}`;
-    await page.request.get(unlockUrl);
-    // console.log('✅ 用例结束 → 自动解锁');
-    // console.log('----------------------------------------'); 
+    await unlockAccount(page, config.username, config.baseUrl);
   } catch (e) {
     console.log('❌ 解锁失败:', e);
   }
@@ -22,106 +29,151 @@ test.afterEach(async ({ page }) => {
 // 1. 正确账号密码 → 登录成功
 test('正确账号密码登录成功', async ({ page }) => {
   const loginPage = new LoginPage(page);
-  await loginPage.login(config.username, config.password);
-
-  await expect(page).toHaveURL(config.baseUrl + '/workspace');
+  try {
+    console.log('开始测试：正确账号密码登录成功');
+    await loginPage.login(config.username, config.password);
+    await loginPage.waitUrl(config.baseUrl + '/workspace');
+    await loginPage.waitFullLoad(); // 等待工作台页面完全加载
+    await expect(page).toHaveURL(config.baseUrl + '/workspace');
+    console.log('测试通过：正确账号密码登录成功');
+    console.log('----------------------------------------');
+  } catch (error) {
+    console.error('登录测试失败:', error);
+    await loginPage.screenshot('login-success-failure');
+    throw error;
+  }
 });
 
 // 2. 密码错误 → 登录失败
 test('正确账号+错误密码提示异常', async ({ page }) => {
   const loginPage = new LoginPage(page);
-  await loginPage.login(config.username, '123456');
-
-  await page.getByText(loginData.errorMsg.wrongPwd1).last().waitFor({state: 'visible',timeout: 10000 });
+  try {
+    console.log('开始测试：正确账号+错误密码提示异常');
+    await loginPage.login(config.username, '123456');
+    await waitForError(page, loginErrorMsg.wrongPwd1);
+    console.log('测试通过：正确账号+错误密码提示异常');
+    console.log('----------------------------------------');
+  } catch (error) {
+    console.error('测试失败:', error);
+    await loginPage.screenshot('wrong-password-failure');
+    throw error;
+  }
 });
 
 // 3. 账号为空 → 不能登录
 test('空账号登录提示异常', async ({ page }) => {
   const loginPage = new LoginPage(page);
-  await loginPage.login('', config.password);
-
-  await page.getByText(loginData.errorMsg.emptyUsername).last().waitFor({state: 'visible',timeout: 10000 });
+  try {
+    console.log('开始测试：空账号登录提示异常');
+    await loginPage.login('', config.password);
+    await waitForError(page, loginErrorMsg.emptyUsername);
+    console.log('测试通过：空账号登录提示异常');
+    console.log('----------------------------------------');
+  } catch (error) {
+    console.error('测试失败:', error);
+    await loginPage.screenshot('empty-username-failure');
+    throw error;
+  }
 });
 
 // 4. 密码为空 → 不能登录
 test('空密码登录提示异常', async ({ page }) => {
   const loginPage = new LoginPage(page);
-  await loginPage.login(config.username, '');
-
-  await page.getByText(loginData.errorMsg.emptyPassword).last().waitFor({state: 'visible',timeout: 10000 });
+  try {
+    console.log('开始测试：空密码登录提示异常');
+    await loginPage.login(config.username, '');
+    await waitForError(page, loginErrorMsg.emptyPassword);
+    console.log('测试通过：空密码登录提示异常');
+    console.log('----------------------------------------');
+  } catch (error) {
+    console.error('测试失败:', error);
+    await loginPage.screenshot('empty-password-failure');
+    throw error;
+  }
 });
 
 // 5.连续 5 次错误密码锁定账号 10 分钟
 test('连续5次错误密码锁定账号', async ({ page }) => {
   const loginPage = new LoginPage(page);
-  const wrongPwd = '123456';
+  try {
+    console.log('开始测试：连续5次错误密码锁定账号');
+    const wrongPwd = '123456';
+    const longTimeout = loginPage.pageLoadTimeout; // 60秒超时，仅用于关键节点
 
-  // 1-4次错误密码
-  for (let i = 1; i <= 4; i++) {
+    // 1-4次错误密码
+    for (let i = 1; i <= 4; i++) {
+      console.log(`第${i}次错误密码尝试`);
+      await loginPage.login(config.username, wrongPwd);
+      await waitForError(page, loginErrorMsg[`wrongPwd${i}`]);
+    };
+
+    // 第5次错误 → 锁定
+    console.log('第5次错误密码尝试（锁定账号）');
     await loginPage.login(config.username, wrongPwd);
-    await  page.getByText(loginData.errorMsg[`wrongPwd${i}`]).last().waitFor({
-      state: 'visible',
-      timeout: 10000
-    });
-  };
+    await waitForError(page, /密码输入错误5次/);
 
-  // 第5次错误 → 锁定
-  await loginPage.login(config.username, wrongPwd);
-  await page.getByText(/密码输入错误5次/).last().waitFor({state: 'visible',timeout: 10000 });
+    // 锁定后正确密码也无法登录
+    console.log('验证锁定状态：使用正确密码登录');
+    await loginPage.login(config.username, config.password);
+    await waitForError(page, /锁定10分钟/);
 
-  // 锁定后正确密码也无法登录
-  await loginPage.login(config.username, config.password);
-  await page.getByText(/锁定10分钟/).last().waitFor({state: 'visible',timeout: 10000 });
+    // ==============================================
+    //  解锁代码（使用工具函数）
+    // ==============================================
+    console.log('解锁账号');
+    await unlockAccount(page, config.username, config.baseUrl);
 
-  // ==============================================
-  //  解锁代码（GET 接口）
-  // ==============================================
-  // 1. 拼接完整接口URL（和Apifox完全一致，替换{userName}为真实账号）
-  const unlockUrl = `${config.baseUrl}/prod-his-api/his/v5/auth/clear/loginError/${encodeURIComponent(config.username)}`;
+    // 5. 刷新页面，清除锁定状态
+    console.log('刷新页面，清除锁定状态');
+    await page.reload();
+    await loginPage.waitFullLoad();
 
-  // 2. 发送 GET 请求解锁
-  const unlockResponse = await page.request.get(unlockUrl);
-  console.log(`解锁接口响应状态: ${unlockResponse.status()}`);
-
-  // 3. 先验证HTTP状态码成功（200）
-  expect(unlockResponse.ok()).toBeTruthy();
-
-  // 4. 解析接口返回的JSON，验证业务数据成功（data: true）
-  const responseData = await unlockResponse.json();
-  console.log('解锁接口返回数据:', responseData);
-  expect(responseData.data).toBe(true); // 验证业务成功
-
-  // 5. 刷新页面，清除锁定状态
-  await page.reload();
-  await loginPage.waitLoad();
-
-  // 解锁后再次输错 → 从第1次开始
-  await loginPage.login(config.username,wrongPwd);
-  await page.getByText(loginData.errorMsg.wrongPwd1).last().waitFor({state: 'visible',timeout: 10000 });
+    // 解锁后再次输错 → 从第1次开始
+    console.log('验证解锁效果：再次输入错误密码');
+ // 解锁后可能需要更长时间加载，使用60秒超时
+    await loginPage.login(config.username, wrongPwd, { timeout: longTimeout });
+    await waitForError(page, loginErrorMsg.wrongPwd1, { timeout: longTimeout });
+    console.log('测试通过: 连续5次错误密码锁定账号');
+    console.log('----------------------------------------');
+  } catch (error) {
+    console.error('测试失败:', error);
+    await loginPage.screenshot('account-lock-failure');
+    throw error;
+  }
 });
  
 
 // LOGIN-008 密码显示/隐藏按钮功能验证
 test('LOGIN-008 密码显示隐藏功能', async ({ page }) => {
   const loginPage = new LoginPage(page);
- 
-  // 1. 在密码框输入密码
-  await loginPage.input('*密码', '1234qwer');
+  try {
+    console.log('开始测试：LOGIN-008 密码显示隐藏功能');
+    
+    // 1. 在密码框输入密码
+    await loginPage.input('*密码', '1234qwer');
 
-  // 2. 定位元素
-  const passwordInput = page.getByLabel('*密码');
-  const eyeBtn = page.locator('div.cursor-pointer');
+    // 2. 定位元素
+    const passwordInput = page.getByLabel('*密码');
+    const eyeBtn = page.locator('div.cursor-pointer');
 
-  // 3. 等待眼睛按钮加载完成
-  await eyeBtn.waitFor({ state: 'visible' });
+    // 3. 等待眼睛按钮加载完成
+    await eyeBtn.waitFor({ state: 'visible' });
 
-  // 4. 点击眼睛 → 显示密码（明文）
-  await eyeBtn.click({ force: true });
-  await expect(passwordInput).toHaveAttribute('type', 'text');
+    // 4. 点击眼睛 → 显示密码（明文）
+    await eyeBtn.click({ force: true });
+    await expect(passwordInput).toHaveAttribute('type', 'text');
 
-  // 5. 再次点击眼睛 → 隐藏密码（密文）
-  await eyeBtn.click({ force: true });
-  await expect(passwordInput).toHaveAttribute('type', 'password');
+    // 5. 再次点击眼睛 → 隐藏密码（密文）
+    await eyeBtn.click({ force: true });
+    await expect(passwordInput).toHaveAttribute('type', 'password');
+    
+    console.log('测试通过：LOGIN-008 密码显示隐藏功能');
+    console.log('----------------------------------------');
+  } catch (error) {
+    console.error('测试失败:', error);
+    await loginPage.screenshot('password-visibility-failure');
+    throw error;
+  }
 }); 
 
 /* // LOGIN-009 记住密码功能验证
