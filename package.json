@@ -4,8 +4,11 @@
     "@types/node": "^25.5.0"
   },
   "scripts": {
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
+    "test": "playwright test --project=test",
+    "test:all": "playwright test",
+    "test:setup": "playwright test --project=setup",
+    "test:clean": "playwright test --project=clean",
+    "test:ui": "playwright test --ui --project=test",
     "test:report": "playwright show-report",
     "setup:env": "node scripts/setup-env.js"
   },

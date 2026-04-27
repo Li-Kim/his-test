@@ -1,6 +1,6 @@
 import { test } from '@playwright/test';
-import { config } from '../config';
-import { unlockAccount } from '../utils/common';
+import { config } from '../../config';
+import { unlockAccount } from '../../utils/common';
 
 test('全局环境清理：解锁账号、清空错误次数', async ({ page }) => {
   try {

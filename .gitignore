@@ -19,6 +19,7 @@ trace.zip
 # 登录状态文件
 loginState.json
 storageState.json
+pw-cache/
 
 # 环境变量文件
 .env

@@ -1,40 +1,43 @@
-#!/usr/bin/env node
-
-/**
- * 环境设置脚本
- * 自动创建 .env 文件（如果不存在）
- */
-
-import fs from 'fs';
 import path from 'path';
+import fs from 'fs';
 
-// 源文件和目标文件路径
-const exampleEnvPath = path.join(path.dirname(new URL(import.meta.url).pathname), '..', '.env.example');
-const envPath = path.join(path.dirname(new URL(import.meta.url).pathname), '..', '.env');
+// 🔥 核心修复：直接获取项目根目录（Windows / Mac 都通用）
+const rootDir = process.cwd();
+const exampleEnvPath = path.join(rootDir, '.env.example');
+const envPath = path.join(rootDir, '.env');
 
-console.log('🔧 开始设置环境变量...');
+console.log('=========================================');
+console.log('🔧 正在初始化环境...');
+console.log('📍 项目根目录：', rootDir);
+console.log('📍 模板文件：', exampleEnvPath);
+console.log('📍 目标文件：', envPath);
+console.log('=========================================');
 
-// 检查 .env.example 文件是否存在
+// 1. 检查模板文件是否存在
 if (!fs.existsSync(exampleEnvPath)) {
-  console.error('❌ .env.example 文件不存在');
+  console.error('❌ 错误：.env.example 文件不存在！');
+  console.error('❌ 请确认文件在项目根目录下');
   process.exit(1);
 }
 
-// 检查 .env 文件是否已存在
+// 2. 如果 .env 已经存在，直接跳过
 if (fs.existsSync(envPath)) {
-  console.log('ℹ️ .env 文件已存在，跳过创建');
+  console.log('✅ .env 文件已存在，跳过生成');
+  console.log('=========================================');
   process.exit(0);
 }
 
-// 从 .env.example 复制到 .env
+// 3. 复制模板生成 .env
 try {
-  const exampleContent = fs.readFileSync(exampleEnvPath, 'utf8');
-  fs.writeFileSync(envPath, exampleContent);
-  console.log('✅ .env 文件创建成功');
-  console.log('📝 请根据实际情况修改 .env 文件中的配置');
-} catch (error) {
-  console.error('❌ 创建 .env 文件失败:', error.message);
+  const content = fs.readFileSync(exampleEnvPath, 'utf8');
+  fs.writeFileSync(envPath, content);
+  console.log('✅ .env 文件创建成功！');
+  console.log('✅ 环境初始化完成！');
+} catch (err) {
+  console.error('❌ 创建 .env 失败：', err.message);
   process.exit(1);
 }
 
-console.log('✨ 环境设置完成！');
+console.log('=========================================');
+
+//node scripts\setup-env.js

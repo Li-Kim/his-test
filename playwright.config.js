@@ -60,13 +60,15 @@ export default defineConfig({
     // 4. 业务测试用例 → 走登录状态
     {
       name: 'test',
-      dependencies: ['setup'],
-      testIgnore: ['**/login.spec.js'],
+    //dependencies: ['setup'],
+      testIgnore: [
+    '**/clean.setup.js',
+    '**/login.setup.js',
+    '**/login.spec.js'
+    ],
       use: {
         headless: false,
         ...devices['Desktop Chrome'],
-        storageState: './loginState.json',
-
       },
     },
 
