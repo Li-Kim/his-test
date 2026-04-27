@@ -34,3 +34,6 @@ Thumbs.db
 *.log
 tmp/
 temp/
+
+# IDE 配置目录
+.trae/
