@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/index.js';
 import { config } from '../config/index.js';
-import { testData, loginErrorMsg } from '../data/index.js';
+import { loginErrorMsg } from '../data/index.js';
 import { unlockAccount, waitForError } from '../utils/common/index.js';
 
 // 输出环境信息
@@ -105,7 +105,7 @@ test('连续5次错误密码锁定账号', async ({ page }) => {
       console.log(`第${i}次错误密码尝试`);
       await loginPage.login(config.username, wrongPwd);
       await waitForError(page, loginErrorMsg[`wrongPwd${i}`]);
-    };
+    }
 
     // 第5次错误 → 锁定
     console.log('第5次错误密码尝试（锁定账号）');
@@ -130,7 +130,7 @@ test('连续5次错误密码锁定账号', async ({ page }) => {
 
     // 解锁后再次输错 → 从第1次开始
     console.log('验证解锁效果：再次输入错误密码');
- // 解锁后可能需要更长时间加载，使用60秒超时
+    // 解锁后可能需要更长时间加载，使用60秒超时
     await loginPage.login(config.username, wrongPwd, { timeout: longTimeout });
     await waitForError(page, loginErrorMsg.wrongPwd1, { timeout: longTimeout });
     console.log('测试通过: 连续5次错误密码锁定账号');
@@ -141,16 +141,15 @@ test('连续5次错误密码锁定账号', async ({ page }) => {
     throw error;
   }
 });
- 
 
 // LOGIN-008 密码显示/隐藏按钮功能验证
 test('LOGIN-008 密码显示隐藏功能', async ({ page }) => {
   const loginPage = new LoginPage(page);
   try {
     console.log('开始测试：LOGIN-008 密码显示隐藏功能');
-    
+
     // 1. 在密码框输入密码
-    await loginPage.input('*密码', '1234qwer');
+    await loginPage.fill('*密码', '1234qwer');
 
     // 2. 定位元素
     const passwordInput = page.getByLabel('*密码');
@@ -166,7 +165,7 @@ test('LOGIN-008 密码显示隐藏功能', async ({ page }) => {
     // 5. 再次点击眼睛 → 隐藏密码（密文）
     await eyeBtn.click({ force: true });
     await expect(passwordInput).toHaveAttribute('type', 'password');
-    
+
     console.log('测试通过：LOGIN-008 密码显示隐藏功能');
     console.log('----------------------------------------');
   } catch (error) {
@@ -174,7 +173,7 @@ test('LOGIN-008 密码显示隐藏功能', async ({ page }) => {
     await loginPage.screenshot('password-visibility-failure');
     throw error;
   }
-}); 
+});
 
 /* // LOGIN-009 记住密码功能验证
 test('LOGIN-009 记住密码功能验证', async ({ page }) => {
@@ -183,14 +182,14 @@ test('LOGIN-009 记住密码功能验证', async ({ page }) => {
   const username = config.username;
   const password = config.password;
   // 1. 输入账号密码
-  await loginPage.input('*账号', username);
-  await loginPage.input('*密码', password);
+  await loginPage.fill('*账号', username);
+  await loginPage.fill('*密码', password);
 
   // 2. 勾选记住密码
   await page.getByLabel('记住密码').check();
 
   // 3. 点击登录 → 等待页面加载
-  await loginPage.clickBtn('login');
+  await loginPage.click('login');
   await loginPage.waitLoad();
 
   // 4. 等待跳转到工作台（必须等跳转完成）
@@ -212,7 +211,7 @@ test('LOGIN-009 记住密码功能验证', async ({ page }) => {
   // 等待确认弹窗的【确认】按钮出现
   const confirmBtn = page.getByRole('button', { name: '确认' });
   await confirmBtn.waitFor({ state: 'visible', timeout: 20000 });
-  await loginPage.clickBtn('确认');
+  await loginPage.click('确认');
 
   // 等待回到登录页
   await loginPage.waitUrl(config.baseUrl);

@@ -18,8 +18,8 @@
       "department": "内科"
     },
     "chargeItems": [
-      {"itemCode": "001", "itemName": "普通门诊诊察费", "price": 50},
-      {"itemCode": "002", "itemName": "血常规检查", "price": 20}
+      { "itemCode": "001", "itemName": "普通门诊诊察费", "price": 50 },
+      { "itemCode": "002", "itemName": "血常规检查", "price": 20 }
     ]
   },
   "hospitalInfo": {

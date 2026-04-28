@@ -1,5 +1,5 @@
 import { test, chromium } from '@playwright/test';
-import { config } from "../../config";
+import { config } from '../../config';
 import { LoginPage } from '../../pages';
 
 test('全局登录', async () => {
@@ -31,6 +31,6 @@ test('全局登录', async () => {
   console.log('🏥 当前医院：', config.hospitalName);
   console.log('🌍 当前环境：', config.env);
   console.log('🔗 测试地址：', config.baseUrl);
-  console.log("✅ 登录成功！缓存已保存！");
+  console.log('✅ 登录成功！缓存已保存！');
   console.log('=========================================');
 });

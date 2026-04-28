@@ -1,5 +1,5 @@
 import { test, chromium } from '@playwright/test';
-import { config } from "../config";
+import { config } from '../config';
 
 // 每个用例都自动用缓存
 test('测试页面', async () => {
@@ -16,5 +16,4 @@ test('测试页面', async () => {
   // --------------------
   // 在这里写你的测试逻辑
   // --------------------
-
 });

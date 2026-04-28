@@ -10,10 +10,9 @@ import suoxianData from './suoxian/test.data.json' with { type: 'json' };
 export const testData = {
   login: loginData,
   common: commonData,
-  suoxian: suoxianData
+  suoxian: suoxianData,
 };
 
 // 导出常用数据的快捷访问
 export const loginErrorMsg = loginData.errorMsg;
 export const commonConstants = commonData.constants;
-

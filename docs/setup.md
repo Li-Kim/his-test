@@ -45,7 +45,7 @@ npx playwright install
    # 索县医院配置
    SUOXIAN_TEST_USERNAME=您的测试账号
    SUOXIAN_TEST_PASSWORD=您的测试密码
-   
+
    # 当前医院
    CURRENT_HOSPITAL=suoxian
    ```
@@ -96,14 +96,14 @@ npm run test:report
    ```javascript
    const hospitalData = {
      suoxian: {
-       name: "索县医院",
-       testUrl: "http://10.58.2.201:20505",
-       prodUrl: "https://xxxx",
+       name: '索县医院',
+       testUrl: 'http://10.58.2.201:20505',
+       prodUrl: 'https://xxxx',
      },
      hospital2: {
-       name: "医院2",
-       testUrl: "http://test-hospital2.com",
-       prodUrl: "https://prod-hospital2.com",
+       name: '医院2',
+       testUrl: 'http://test-hospital2.com',
+       prodUrl: 'https://prod-hospital2.com',
      },
    };
    ```
@@ -114,7 +114,7 @@ npm run test:report
    # 医院2配置
    HOSPITAL2_TEST_USERNAME=医院2测试账号
    HOSPITAL2_TEST_PASSWORD=医院2测试密码
-   
+
    # 当前医院
    CURRENT_HOSPITAL=hospital2
    ```
@@ -161,6 +161,7 @@ npx playwright install chromium
 ### 5.3 环境变量配置错误
 
 确保 `.env` 文件中的配置值正确，特别是：
+
 - 用户名和密码是否正确
 - 当前医院是否设置正确
 - 没有多余的空格或注释
@@ -276,6 +277,7 @@ npx playwright install
 ### 9.2 更新配置
 
 当项目结构或配置方式发生变化时，需要更新：
+
 - `.env` 文件中的配置
 - `config/config.js` 中的医院配置
 - 测试用例中的导入路径

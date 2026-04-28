@@ -4,6 +4,7 @@
 > 支持全局登录持久化、POM 页面封装、多环境/多医院配置与 CI/CD 自动化执行。
 
 ## 📌 核心特性
+
 - ✅ 全局登录状态持久化 (`login.setup.js`)
 - ✅ 页面对象模型 (POM) 封装，代码高复用
 - ✅ 多环境 / 多医院配置管理 (`config/` 目录）
@@ -14,6 +15,7 @@
 - ✅ 环境变量管理（.env 文件）
 
 ## 📂 目录结构
+
 ```text
 his-test/
 ├── .github/workflows/  # CI/CD 流水线配置
@@ -47,6 +49,7 @@ his-test/
 ## 🚀 快速开始
 
 ### 1. 环境搭建
+
 ```bash
 # 安装依赖
 npm install
@@ -60,6 +63,7 @@ cp .env.example .env
 ```
 
 ### 2. 运行测试
+
 ```bash
 # 运行所有测试
 npm test
@@ -77,6 +81,7 @@ npm run test:report
 ## 📖 使用指南
 
 ### 导入模块
+
 项目使用 index.js 导出模式，简化导入路径：
 
 ```javascript
@@ -91,11 +96,13 @@ import { config, baseConfig } from '../config';
 ```
 
 ### 多医院配置
+
 1. 在 `config/config.js` 中添加医院配置
 2. 在 `.env` 文件中添加医院的敏感信息
 3. 修改 `.env` 文件中的 `CURRENT_HOSPITAL` 切换医院
 
 ### 编写测试用例
+
 ```javascript
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages';
@@ -112,7 +119,9 @@ test('登录测试', async ({ page }) => {
 ## 🔧 配置管理
 
 ### 环境变量
+
 敏感信息（如用户名、密码）存储在 `.env` 文件中：
+
 ```env
 # 索县医院配置
 SUOXIAN_TEST_USERNAME=SA540626000010
@@ -123,13 +132,15 @@ CURRENT_HOSPITAL=suoxian
 ```
 
 ### 医院配置
+
 医院的非敏感信息（如名称、URL）存储在 `config/config.js` 中：
+
 ```javascript
 const hospitalData = {
   suoxian: {
-    name: "索县医院",
-    testUrl: "http://10.58.2.201:20505",
-    prodUrl: "https://xxxx",
+    name: '索县医院',
+    testUrl: 'http://10.58.2.201:20505',
+    prodUrl: 'https://xxxx',
   },
   // 其他医院配置...
 };
@@ -145,4 +156,3 @@ const hospitalData = {
 6. **添加适当的等待**：使用 Playwright 的自动等待，避免硬等待
 7. **添加详细的日志**：便于调试和分析测试结果
 8. **定期清理测试数据**：使用 `clean.setup.js` 清理测试环境
-
