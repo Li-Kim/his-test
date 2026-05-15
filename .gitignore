@@ -19,8 +19,9 @@ trace.zip
 loginState.json
 storageState.json
 pw-cache/
+browser-data/
 
-# 环境变量文件
+## 环境变量文件
 .env
 .env.local
 .env.*.local
@@ -36,3 +37,6 @@ temp/
 
 # IDE 配置目录
 .trae/
+
+# Playwright MCP 临时文件
+.playwright-mcp/

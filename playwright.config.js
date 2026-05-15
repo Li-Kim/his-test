@@ -11,7 +11,7 @@ export default defineConfig({
   fullyParallel: true, // 是否并行跑用例
   forbidOnly: !!process.env.CI, // CI 环境禁止 test.only
   retries: process.env.CI ? 2 : 0, // 失败重试次数
-  workers: process.env.CI ? 2 : undefined, //  worker 数量
+  workers: 1, // 使用共享浏览器缓存，必须单 worker 并发
   reporter: 'html', // 测试报告格式
 
   //use 管「页面」：页面默认网址、操作超时、截图录屏、登录状态。
@@ -32,16 +32,11 @@ export default defineConfig({
     // 1. 环境清理（解锁账号）
     {
       name: 'clean',
+      testDir: './fixtures',
       testMatch: '**/clean.setup.js',
     },
 
-    // 2. 全局登录（给业务用例使用）
-    {
-      name: 'setup',
-      testMatch: '**/login.setup.js',
-    },
-
-    // 3. 登录测试用例 → 只清理，不登录
+    // 2. 登录测试用例 → 只清理，不登录
     {
       name: 'login',
       dependencies: ['clean'], //清理账号
@@ -55,7 +50,7 @@ export default defineConfig({
       },
     },
 
-    // 4. 业务测试用例 → 走登录状态
+    // 3. 业务测试用例 → 走登录状态
     {
       name: 'test',
       //dependencies: ['setup'],

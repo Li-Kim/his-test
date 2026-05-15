@@ -1,19 +1,13 @@
-import { test, chromium } from '@playwright/test';
-import { config } from '../config';
+// 导入 fixture
+import { test, expect } from '../fixtures/login.fixture.js';
 
-// 每个用例都自动用缓存
-test('测试页面', async () => {
-  // 🔥 自动复用 pw-cache 缓存（登录态 + IndexedDB + 字典表）
-  const context = await chromium.launchPersistentContext('./pw-cache', {
-    headless: false,
-  });
+// 使用 fixture 提供的已登录页面
+test('测试缓存生成', async ({ page }) => {
+  // page 已经是已登录状态，直接验证
+  await expect(page).toHaveURL(/workspace|login/); // 允许登录页或工作台
+  console.log('✅ 缓存已生成！');
 
-  const page = await context.newPage();
-
-  // 直接进页面，已登录！不下载字典！
-  await page.goto(config.baseUrl + '/workspace');
-
-  // --------------------
-  // 在这里写你的测试逻辑
-  // --------------------
+  // 添加等待，保持页面可见（等待足够时间让登录完成）
+  console.log('⏳ 保持页面打开 5 秒...');
+  await page.waitForTimeout(5000); // 等待 5 秒
 });

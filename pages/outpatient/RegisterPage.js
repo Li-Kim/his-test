@@ -13,12 +13,12 @@ export class RegisterPage extends BasePage {
   }
 
   async submitRegister() {
-    await this.click('确认挂号');
+    await this.clickButton('确认挂号');
     await this.waitForVisible('挂号成功');
   }
 
   async cancelRegister() {
-    await this.click('作废挂号');
-    await this.click('确认');
+    await this.clickButton('作废挂号');
+    await this.clickButton('确认');
   }
 }

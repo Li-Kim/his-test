@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/index.js';
-import { config } from '../config/index.js';
-import { loginErrorMsg } from '../data/index.js';
+import { config } from '../config/config.js';
+import { loginErrorMsg } from '../test-data/index.js';
 import { unlockAccount, waitForError } from '../utils/common/index.js';
 
 // 输出环境信息

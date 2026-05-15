@@ -25,6 +25,7 @@ export default [
       'no-undef': 'warn',
       'preserve-caught-error': 'off',
       'no-constant-binary-expression': 'off',
+      'no-empty-pattern': 'off',
     },
   },
   {
