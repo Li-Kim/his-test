@@ -1,6 +1,6 @@
-import { test, expect } from '../../fixtures/login.fixture.js';
-import { DoctorPage } from '../../pages';
 import { config } from '../../config/config.js';
+import { expect, test } from '../../fixtures/login.fixture.js';
+import { DoctorPage } from '../../pages';
 
 test.beforeEach(async ({ page }) => {
   const doctorPage = new DoctorPage(page);
@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
 
   // 如果不在工作台，先导航过去
   if (!currentUrl.includes('/workspace')) {
-    await page.goto(config.baseUrl + '/workspace', { timeout: 15000 });
+    await page.goto(`${config.baseUrl}/workspace`, { timeout: 15000 });
     await doctorPage.selectDepartment('外科门诊');
     await doctorPage.enterDoctorStation();
   } else if (!currentUrl.includes('/doctor-station')) {

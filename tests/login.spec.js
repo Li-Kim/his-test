@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/index.js';
+import { expect, test } from '@playwright/test';
 import { config } from '../config/config.js';
+import { LoginPage } from '../pages/index.js';
 import { loginErrorMsg } from '../test-data/index.js';
 import { unlockAccount, waitForError } from '../utils/common/index.js';
 
@@ -32,9 +32,9 @@ test('正确账号密码登录成功', async ({ page }) => {
   try {
     console.log('开始测试：正确账号密码登录成功');
     await loginPage.login(config.username, config.password);
-    await loginPage.waitUrl(config.baseUrl + '/workspace');
+    await loginPage.waitUrl(`${config.baseUrl}/workspace`);
     await loginPage.waitFullLoad(); // 等待工作台页面完全加载
-    await expect(page).toHaveURL(config.baseUrl + '/workspace');
+    await expect(page).toHaveURL(`${config.baseUrl}/workspace`);
     console.log('测试通过：正确账号密码登录成功');
     console.log('----------------------------------------');
   } catch (error) {

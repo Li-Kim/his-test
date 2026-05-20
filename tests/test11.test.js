@@ -1,5 +1,5 @@
 // 导入 fixture
-import { test, expect } from '../fixtures/login.fixture.js';
+import { expect, test } from '../fixtures/login.fixture.js';
 
 // 使用 fixture 提供的已登录页面
 test('测试缓存生成', async ({ page }) => {

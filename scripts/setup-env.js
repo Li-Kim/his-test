@@ -1,5 +1,5 @@
-import path from 'path';
-import fs from 'fs';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // 🔥 核心修复：直接获取项目根目录（Windows / Mac 都通用）
 const rootDir = process.cwd();

@@ -1,9 +1,9 @@
 // 测试数据管理模块
 // 集中管理所有测试数据，提供统一的访问接口
 
+import commonData from './common/common.data.json' with { type: 'json' };
 // 导入所有测试数据
 import loginData from './common/loginData.json' with { type: 'json' };
-import commonData from './common/common.data.json' with { type: 'json' };
 import suoxianData from './suoxian/test.data.json' with { type: 'json' };
 
 // 统一导出测试数据

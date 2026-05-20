@@ -1,10 +1,8 @@
 {
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@biomejs/biome": "^2.4.15",
     "@playwright/test": "^1.59.1",
-    "@types/node": "^25.5.0",
-    "eslint": "^10.2.1",
-    "prettier": "^3.8.3"
+    "@types/node": "^25.5.0"
   },
   "scripts": {
     "test": "playwright test --project=test",
@@ -14,10 +12,9 @@
     "test:ui": "playwright test --ui --project=test",
     "test:report": "playwright show-report",
     "setup:env": "node scripts/setup-env.js",
-    "lint:check": "eslint . --ext .js --ignore-pattern .gitignore",
-    "lint:fix": "eslint . --ext .js --fix --ignore-pattern .gitignore",
-    "format:check": "prettier --check .",
-    "format:fix": "prettier --write ."
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write ."
   },
   "name": "his-test",
   "version": "1.0.0",

@@ -1,6 +1,6 @@
 import { test as base, chromium } from '@playwright/test';
-import { LoginPage } from '../pages/index.js';
 import { config } from '../config/config.js';
+import { LoginPage } from '../pages/index.js';
 
 const CACHE_PATH = './browser-data';
 let globalContext = null;
@@ -31,7 +31,7 @@ export const test = base.extend({
       if (isLoginPage) {
         console.log('🔐 正在登录...');
         await loginPage.login(config.username, config.password);
-        await page.waitForURL(config.baseUrl + '/workspace', {
+        await page.waitForURL(`${config.baseUrl}/workspace`, {
           timeout: 120000,
         });
         await page.waitForLoadState('networkidle', { timeout: 120000 });
@@ -50,7 +50,7 @@ export const test = base.extend({
 
     // 确保在工作台页面
     if (!page.url().includes('/workspace')) {
-      await page.goto(config.baseUrl + '/workspace');
+      await page.goto(`${config.baseUrl}/workspace`);
       await page.waitForLoadState('domcontentloaded');
     }
 

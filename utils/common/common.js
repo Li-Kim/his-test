@@ -10,12 +10,12 @@ export function randomName() {
 
 // 工具2：生成随机手机号
 export function randomPhone() {
-  return '138' + Math.random().toString().slice(2, 10);
+  return `138${Math.random().toString().slice(2, 10)}`;
 }
 
 // 工具3：生成随机门诊号
 export function randomClinicNo() {
-  return 'MZ' + new Date().getTime().toString().slice(-8);
+  return `MZ${Date.now().toString().slice(-8)}`;
 }
 
 // 工具4：获取今天日期 2026-03-25
@@ -29,7 +29,7 @@ export function getTodayDate() {
 
 // 工具5：等待几秒（调试非常好用）
 export function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // 工具6：随机身份证号（18位，符合规则）

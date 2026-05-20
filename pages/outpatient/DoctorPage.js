@@ -257,7 +257,7 @@ export class DoctorPage extends BasePage {
       // 检查是否已经在处置标签页
       const isActive = await currentTab
         .evaluate(
-          (el) =>
+          el =>
             el.classList.contains('active') ||
             el.getAttribute('aria-selected') === 'true'
         )
@@ -1183,7 +1183,7 @@ export class DoctorPage extends BasePage {
     await tab.waitFor({ state: 'visible', timeout: this.timeout });
     // 等待 aria-selected="true" 表示页签已激活
     await tab.evaluate(
-      (el) =>
+      el =>
         el.getAttribute('aria-selected') === 'true' ||
         Promise.reject('Tab not active')
     );
