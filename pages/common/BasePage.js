@@ -54,17 +54,24 @@ export class BasePage {
   /**
    * 点击按钮（通过按钮文字定位）
    * @param {string} text - 按钮上的文字
-   * @example await this.clickButton('确定')
-   * @example await this.clickButton('保存')
+   * @param {Object} options - 选项
+   * @param {boolean} options.exact - 是否精确匹配（默认 true）
+   *  @example await this.clickButton('结束就诊', { exact: false })
    */
-  async clickButton(text) {
+  async clickButton(text, options = {}) {
     if (!text) throw new Error('clickButton: text 不能为空');
-    const element = this.page.getByRole('button', { name: text, exact: true });
+    const { exact = true } = options;
+
+    const element = this.page.getByRole('button', { name: text, exact });
     await element.waitFor({ state: 'visible', timeout: this.timeout });
-    // 等待元素稳定（动画完成）
-    await element.waitFor({ state: 'attached', timeout: 5000 });
-    // 使用 force: true 处理元素不稳定的情况（如hover效果）
-    await element.click({ force: true, timeout: 10000 });
+
+    try {
+      // 标准点击（适配纯文字按钮：保存/确定）
+      await element.click({ timeout: 5000 });
+    } catch {
+      // 兜底JS点击（适配图标按钮：结束就诊）
+      await element.evaluate(node => node.click());
+    }
   }
 
   /**
