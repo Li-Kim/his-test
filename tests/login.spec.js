@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { config } from '../config/config.js';
 import { LoginPage } from '../pages/index.js';
 import { loginErrorMsg } from '../test-data/index.js';
-import { unlockAccount, waitForError } from '../utils/common/index.js';
+import { unlockAccount, waitForError } from '../utils/index.js';
 
 // 输出环境信息
 console.log('=========================================');

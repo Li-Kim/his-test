@@ -1,6 +1,6 @@
 import { test } from '@playwright/test';
 import { config } from '../config/config.js';
-import { unlockAccount } from '../utils/common/index.js';
+import { unlockAccount } from '../utils/index.js';
 
 test('全局环境清理：解锁账号、清空错误次数', async ({ page }) => {
   try {
