@@ -1,45 +1,37 @@
-// 加载环境变量
 import dotenv from 'dotenv';
-
 dotenv.config();
 
-// 配置加载逻辑
-const currentEnv = process.env.NODE_ENV || 'test';
-const currentHospital = process.env.CURRENT_HOSPITAL || 'suoxian'; // 从环境变量获取当前医院
+// 读取环境配置（全大写，无大小写转换）
+const currentEnv = process.env.NODE_ENV || 'TEST';
+const currentHospital = process.env.CURRENT_HOSPITAL || 'SUOXIAN';
 
-// 医院配置（非敏感信息）
+// 医院基础配置（只存名称，不存任何地址！）
 const hospitalData = {
-  suoxian: {
+  SUOXIAN: {
     name: '索县医院',
-    testUrl: 'http://10.58.2.201:20505',
-    prodUrl: 'https://xxxx',
   },
 };
 
+// 校验医院是否存在
 const hospital = hospitalData[currentHospital];
-// 安全校验
 if (!hospital) {
-  throw new Error(`未找到医院：${currentHospital}，请检查 config.js`);
+  throw new Error(`未找到医院配置：${currentHospital}`);
 }
 
-// 从环境变量获取敏感信息
-const hospitalPrefix = currentHospital.toUpperCase();
-const username =
-  process.env[`${hospitalPrefix}_${currentEnv.toUpperCase()}_USERNAME`];
-const password =
-  process.env[`${hospitalPrefix}_${currentEnv.toUpperCase()}_PASSWORD`];
-const baseUrl =
-  process.env[`${hospitalPrefix}_${currentEnv.toUpperCase()}_URL`] ||
-  (currentEnv === 'test' ? hospital.testUrl : hospital.prodUrl);
+// 拼接环境变量 KEY
+const envKey = `${currentHospital}_${currentEnv}`;  // 例如：SUOXIAN_TEST
 
-// 验证必要配置
-if (!username || !password) {
-  throw new Error(
-    `缺少必要的配置项，请检查 .env 文件中 ${hospitalPrefix}_${currentEnv.toUpperCase()}_USERNAME 和 ${hospitalPrefix}_${currentEnv.toUpperCase()}_PASSWORD 的配置`
-  );
-}
+// 从 .env 读取所有配置（必须全部配置在 .env 中）
+const baseUrl = process.env[`${envKey}_URL`];
+const username = process.env[`${envKey}_USERNAME`];
+const password = process.env[`${envKey}_PASSWORD`];
 
-// 导出配置
+// 强制校验：必须全部填写，不填直接报错
+if (!baseUrl) throw new Error(`缺少配置：${envKey}_URL`);
+if (!username) throw new Error(`缺少配置：${envKey}_USERNAME`);
+if (!password) throw new Error(`缺少配置：${envKey}_PASSWORD`);
+
+// 导出给测试用例使用
 export const config = {
   env: currentEnv,
   hospital: currentHospital,
